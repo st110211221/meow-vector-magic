@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐾 喵喵向量魔法屋｜互動線性組合與內積實驗室</title>
+  <style>
+    :root {
+      --bg-main: #FFFDF9;
+      --bg-pattern: #FFF5F7;
+      --bg-card: #FFFFFF;
+      --bg-soft: #FFF0F3;
+      --bg-mint: #EBFBF5;
+      --bg-lavender: #F3EEFF;
+      --bg-butter: #FFFBEA;
+      --text-main: #4A3531;
+      --text-muted: #8C736E;
+      --border-color: #F8D7E0;
+      --accent-pink: #FF7597;
+      --accent-pink-dark: #E6567A;
+      --accent-mint: #2EC4B6;
+      --accent-purple: #8B5CF6;
+      --accent-gold: #F59E0B;
+      --grid-line: #F3E5E8;
+      --axis-line: #C9B2B8;
+      --shadow-soft: 0 10px 25px rgba(255, 117, 151, 0.12);
+      --shadow-card: 0 6px 16px rgba(74, 53, 49, 0.06);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    [data-theme="night"] {
+      --bg-main: #1F1B2C;
+      --bg-pattern: #262136;
+      --bg-card: #2B253E;
+      --bg-soft: #382E4F;
+      --bg-mint: #233B3E;
+      --bg-lavender: #322A4D;
+      --bg-butter: #3B3428;
+      --text-main: #FDF7FA;
+      --text-muted: #C4B5FD;
+      --border-color: #493D66;
+      --accent-pink: #FF85A2;
+      --accent-pink-dark: #FF9EBB;
+      --accent-mint: #4FD1C5;
+      --accent-purple: #A78BFA;
+      --accent-gold: #FBBF24;
+      --grid-line: #362F4B;
+      --axis-line: #6D5F8D;
+      --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.35);
+      --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-main);
+      background-image: radial-gradient(var(--border-color) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      color: var(--text-main);
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      padding-bottom: 48px;
+    }
+
+    /* Top Header */
+    header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px 20px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-card);
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 2.5px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(255, 117, 151, 0.3));
+      animation: floatBounce 3s ease-in-out infinite;
+    }
+
+    @keyframes floatBounce {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-4px) rotate(5deg); }
+    }
+
+    .brand-title h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+    }
+
+    .brand-title p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 2px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-card);
+    }
+
+    .pill-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-pink);
+    }
+
+    .pill-btn.active-pill {
+      background: var(--accent-pink);
+      color: #FFF;
+      border-color: var(--accent-pink);
+    }
+
+    /* Mode Navigation Tabs */
+    .mode-nav {
+      max-width: 1240px;
+      margin: 10px auto 20px;
+      padding: 0 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mode-tab {
+      flex: 1;
+      min-width: 200px;
+      padding: 13px 18px;
+      border-radius: var(--radius-md);
+      border: 2.5px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.96rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.22s ease;
+      box-shadow: var(--shadow-card);
+    }
+
+    .mode-tab:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-pink);
+    }
+
+    .mode-tab.active {
+      background: linear-gradient(135deg, var(--accent-pink), #FF9EBB);
+      color: #FFFFFF;
+      border-color: var(--accent-pink);
+      box-shadow: 0 8px 20px rgba(255, 117, 151, 0.32);
+    }
+
+    /* Main Workspace Grid */
+    .workspace {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 2.5px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--bg-soft);
+      color: var(--accent-pink-dark);
+      border: 1.5px solid var(--border-color);
+    }
+
+    /* Interactive Canvas Container */
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      min-height: 400px;
+      background: var(--bg-main);
+      border: 2.5px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .canvas-wrapper:active {
+      cursor: grabbing;
+    }
+
+    canvas#vectorCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      font-weight: 700;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .preset-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preset-btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-btn:hover {
+      background: var(--bg-lavender);
+      border-color: var(--accent-purple);
+      transform: scale(1.03);
+    }
+
+    /* Right Column Control Panels */
+    .control-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .vector-box {
+      padding: 15px 16px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-color);
+      transition: transform 0.2s ease;
+    }
+
+    .vector-box.u-box {
+      background: var(--bg-soft);
+      border-color: #FFB3C6;
+    }
+
+    .vector-box.v-box {
+      background: var(--bg-mint);
+      border-color: #81E6D9;
+    }
+
+    .vector-box.c-box {
+      background: var(--bg-lavender);
+      border-color: #D6BCFA;
+    }
+
+    .vector-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .coord-pill {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      font-size: 0.86rem;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      font-weight: 700;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 74px 1fr 58px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .slider-row:last-child {
+      margin-bottom: 0;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-pink);
+      border: 2.5px solid #FFF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .v-box input[type="range"]::-webkit-slider-thumb {
+      background: var(--accent-mint);
+    }
+
+    .c-box input[type="range"]::-webkit-slider-thumb {
+      background: var(--accent-purple);
+    }
+
+    .num-input {
+      width: 100%;
+      padding: 5px 6px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-align: center;
+      font-family: monospace;
+    }
+
+    /* Formula & Insight Readout Card */
+    .formula-card {
+      background: var(--bg-butter);
+      border: 2px solid #FDE68A;
+      border-radius: var(--radius-md);
+      padding: 15px 16px;
+    }
+
+    .formula-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .math-block {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      background: var(--bg-card);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
+      font-size: 0.88rem;
+      margin-bottom: 8px;
+      overflow-x: auto;
+    }
+
+    .harmony-meter {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .harmony-face {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .harmony-text h4 {
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .harmony-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Game Mode Banner & Controls */
+    .game-panel {
+      display: none;
+      background: linear-gradient(135deg, var(--bg-soft), var(--bg-lavender));
+      border: 2.5px solid var(--accent-pink);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .game-panel.active {
+      display: block;
+    }
+
+    .game-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .stat-box {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      text-align: center;
+      border: 1.5px solid var(--border-color);
+    }
+
+    .stat-box .label {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .stat-box .val {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--accent-pink-dark);
+      font-family: monospace;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--accent-pink);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(255, 117, 151, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-pink-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-purple);
+      background: var(--bg-lavender);
+    }
+
+    .hint-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--accent-purple);
+      font-size: 0.83rem;
+      display: none;
+    }
+
+    /* Bottom Notebook & Achievements Section */
+    .bottom-section {
+      max-width: 1240px;
+      margin: 22px auto 0;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    @media (max-width: 960px) {
+      .bottom-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 520px) {
+      .badge-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .ach-card {
+      padding: 12px 10px;
+      border-radius: var(--radius-sm);
+      border: 2px dashed var(--border-color);
+      background: var(--bg-main);
+      text-align: center;
+      opacity: 0.55;
+      filter: grayscale(0.85);
+      transition: all 0.3s ease;
+    }
+
+    .ach-card.unlocked {
+      opacity: 1;
+      filter: grayscale(0);
+      border-style: solid;
+      border-color: var(--accent-gold);
+      background: var(--bg-butter);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+    }
+
+    .ach-icon {
+      font-size: 1.65rem;
+      margin-bottom: 4px;
+    }
+
+    .ach-name {
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .ach-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .log-list {
+      max-height: 210px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .log-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-soft);
+      border: 1.5px solid var(--border-color);
+      font-size: 0.82rem;
+      gap: 8px;
+    }
+
+    .log-item button {
+      padding: 4px 9px;
+      border-radius: 8px;
+      border: 1px solid var(--accent-pink);
+      background: var(--bg-card);
+      color: var(--accent-pink-dark);
+      font-weight: 700;
+      font-size: 0.76rem;
+      cursor: pointer;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--text-main);
+      color: #FFF;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Modal for Spec & Vibe Coding Iteration Log */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(31, 27, 44, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border: 3px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      max-width: 720px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .modal-content h3 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      color: var(--accent-pink-dark);
+    }
+
+    .modal-content ul {
+      padding-left: 20px;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+    }
+
+    .modal-content li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand-box">
+      <div class="brand-icon" aria-hidden="true">🐱</div>
+      <div class="brand-title">
+        <h1>喵喵向量魔法屋｜線性組合與內積實驗室</h1>
+        <p>Vibe Coding 互動數學 Web App ・ 用直覺玩懂向量合成與內積夾角</p>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="pill-btn" id="btnSaveSnap" title="將目前向量組合存進實驗筆記">
+        📌 收藏目前組合
+      </button>
+      <button class="pill-btn" id="btnSoundToggle" title="切換可愛音效">
+        🔊 音效：開
+      </button>
+      <button class="pill-btn" id="btnThemeToggle" title="切換日夜馬卡龍主題">
+        🌙 星空夜間模式
+      </button>
+      <button class="pill-btn" id="btnSpecModal" title="查看規格書與 Vibe Coding 迭代紀錄">
+        📖 規格與演進紀錄
+      </button>
+    </div>
+  </header>
+
+  <!-- Mode Navigation -->
+  <nav class="mode-nav" aria-label="互動模式切換">
+    <button class="mode-tab active" data-mode="sandbox">
+      🎨 自由探索沙盒（線性組合 c₁u + c₂v）
+    </button>
+    <button class="mode-tab" data-mode="dot">
+      🔍 內積與夾角雷達（u · v 與投影視覺化）
+    </button>
+    <button class="mode-tab" data-mode="game">
+      🐟 小貓尋寶闖關（線性組合解謎挑戰）
+    </button>
+  </nav>
+
+  <!-- Main Workspace -->
+  <main class="workspace">
+    <!-- Left Column: Interactive 2D Coordinate Canvas -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span id="canvasModeTitle">✨ 2D 魔法座標平面（可直接用滑鼠拖曳向量箭頭端點！）</span>
+        </div>
+        <span class="badge" id="cursorCoordBadge">游標：(0.0, 0.0)</span>
+      </div>
+
+      <div class="canvas-wrapper" id="canvasContainer">
+        <canvas id="vectorCanvas" width="720" height="540"></canvas>
+      </div>
+
+      <div class="canvas-legend">
+        <div class="legend-items">
+          <span><i class="legend-dot" style="background:#FF7597;"></i>草莓向量 u / c₁u</span>
+          <span><i class="legend-dot" style="background:#2EC4B6;"></i>薄荷向量 v / c₂v</span>
+          <span><i class="legend-dot" style="background:#8B5CF6;"></i>合成魔法向量 w = c₁u + c₂v</span>
+          <span id="legendExtra"><i class="legend-dot" style="background:#F59E0B;"></i>平行四邊形法則輔助線</span>
+        </div>
+        <button class="preset-btn" id="btnResetView">🔄 重置標準值</button>
+      </div>
+
+      <div class="preset-bar">
+        <span style="font-size:0.8rem;font-weight:800;color:var(--text-muted);align-self:center;">⚡ 一鍵體驗課堂經典範例：</span>
+        <button class="preset-btn" data-preset="lecture">📘 課堂範例 (1,1)+(2,1)=(3,2)</button>
+        <button class="preset-btn" data-preset="orthogonal">📐 垂直正交 (90° 內積為 0)</button>
+        <button class="preset-btn" data-preset="collinear">🚀 同向疊加 (夾角 0°)</button>
+        <button class="preset-btn" data-preset="opposite">⚡ 反向抵銷 (c₁u + c₂v = 0)</button>
+      </div>
+    </section>
+
+    <!-- Right Column: Controls, Game Box & Math Formula Breakdown -->
+    <section class="control-section">
+
+      <!-- Treasure Hunt Game Mode Panel -->
+      <div class="game-panel" id="gamePanel">
+        <div class="card-header" style="margin-bottom:6px;">
+          <div class="card-title">🐟 尋寶任務：調整 c₁ 與 c₂ 幫小貓抓到小魚乾！</div>
+          <span class="badge" id="gameLevelBadge">難度：暖身整數關</span>
+        </div>
+        <p style="font-size:0.84rem;color:var(--text-muted);" id="gameMissionText">
+          請拉動下方紫色區塊的係數 <b>c₁</b> 與 <b>c₂</b>，讓合成向量 <b>w = c₁u + c₂v</b> 的貓咪端點精準停在小魚乾目標座標上！
+        </p>
+
+        <div class="game-stats">
+          <div class="stat-box">
+            <div class="label">🎯 目標小魚乾</div>
+            <div class="val" id="targetCoordText">(4, 3)</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">📏 目前距離誤差</div>
+            <div class="val" id="distanceErrorText">1.41</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">🏆 累積捕獲 / 連勝</div>
+            <div class="val" id="scoreStreakText">0 隻 / 🔥0</div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-primary" id="btnCheckAnswer">🐾 檢查是否抓到小魚乾！</button>
+          <button class="btn-secondary" id="btnGameHint">💡 喵喵數學提示</button>
+          <button class="btn-secondary" id="btnNextPuzzle">🎲 換一題</button>
+          <button class="btn-secondary" id="btnToggleDifficulty">🌟 切換進階關</button>
+        </div>
+
+        <div class="hint-box" id="gameHintBox"></div>
+      </div>
+
+      <!-- Scalar Multipliers c1 & c2 -->
+      <div class="vector-box c-box" id="scalarControlBox">
+        <div class="vector-box-header">
+          <span>🪄 魔法配方倍數（線性組合係數 c₁, c₂）</span>
+          <span class="coord-pill" id="wCoordPill">w = (3.0, 2.0)</span>
+        </div>
+        <div class="slider-row">
+          <label for="c1Range">草莓倍數 c₁</label>
+          <input type="range" id="c1Range" min="-3" max="3" step="0.5" value="1" />
+          <input type="number" id="c1Num" class="num-input" min="-5" max="5" step="0.5" value="1" />
+        </div>
+        <div class="slider-row">
+          <label for="c2Range">薄荷倍數 c₂</label>
+          <input type="range" id="c2Range" min="-3" max="3" step="0.5" value="1" />
+          <input type="number" id="c2Num" class="num-input" min="-5" max="5" step="0.5" value="1" />
+        </div>
+      </div>
+
+      <!-- Base Vector u -->
+      <div class="vector-box u-box">
+        <div class="vector-box-header">
+          <span>🍓 基底向量 u = (uₓ, uᵧ)</span>
+          <span class="coord-pill" id="uCoordPill">u = (1.0, 1.0)</span>
+        </div>
+        <div class="slider-row">
+          <label for="uxRange">水平分量 uₓ</label>
+          <input type="range" id="uxRange" min="-5" max="5" step="0.5" value="1" />
+          <input type="number" id="uxNum" class="num-input" min="-8" max="8" step="0.5" value="1" />
+        </div>
+        <div class="slider-row">
+          <label for="uyRange">垂直分量 uᵧ</label>
+          <input type="range" id="uyRange" min="-5" max="5" step="0.5" value="1" />
+          <input type="number" id="uyNum" class="num-input" min="-8" max="8" step="0.5" value="1" />
+        </div>
+      </div>
+
+      <!-- Base Vector v -->
+      <div class="vector-box v-box">
+        <div class="vector-box-header">
+          <span>🌿 基底向量 v = (vₓ, vᵧ)</span>
+          <span class="coord-pill" id="vCoordPill">v = (2.0, 1.0)</span>
+        </div>
+        <div class="slider-row">
+          <label for="vxRange">水平分量 vₓ</label>
+          <input type="range" id="vxRange" min="-5" max="5" step="0.5" value="2" />
+          <input type="number" id="vxNum" class="num-input" min="-8" max="8" step="0.5" value="2" />
+        </div>
+        <div class="slider-row">
+          <label for="vyRange">垂直分量 vᵧ</label>
+          <input type="range" id="vyRange" min="-5" max="5" step="0.5" value="1" />
+          <input type="number" id="vyNum" class="num-input" min="-8" max="8" step="0.5" value="1" />
+        </div>
+      </div>
+
+      <!-- Live Formula & Geometric Meaning Card -->
+      <div class="formula-card">
+        <div class="formula-title">
+          <span>🧮 即時數學推導與幾何意義</span>
+          <span class="badge" id="angleBadge">夾角 θ = 18.4°</span>
+        </div>
+        <div class="math-block" id="linearCombFormula">
+          w = 1.0·(1.0, 1.0) + 1.0·(2.0, 1.0) = (3.0, 2.0)
+        </div>
+        <div class="math-block" id="dotProductFormula">
+          u · v = (1.0×2.0) + (1.0×1.0) = 3.00 ｜ cos θ = 0.949
+        </div>
+        <div class="harmony-meter">
+          <div class="harmony-face" id="harmonyFace">😻</div>
+          <div class="harmony-text">
+            <h4 id="harmonyTitle">內積 > 0：方向相近・喵喵默契超高！</h4>
+            <p id="harmonyDesc">兩向量夾角小於 90°，在彼此方向上有正向投影加成，就像神經網路中高度相關的記憶特徵！</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Bottom Section: Achievements & Saved Experiments -->
+  <section class="bottom-section">
+    <!-- Achievements Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🏅 喵喵數學成就徽章（自動記憶於瀏覽器）</div>
+        <span class="badge" id="achCountBadge">已解鎖 0 / 6</span>
+      </div>
+      <div class="badge-grid" id="badgeGrid">
+        <div class="ach-card" data-ach="first_drag">
+          <div class="ach-icon">🐾</div>
+          <div class="ach-name">肉球初體驗</div>
+          <div class="ach-desc">調整或拖曳任一向量</div>
+        </div>
+        <div class="ach-card" data-ach="ortho_master">
+          <div class="ach-icon">📐</div>
+          <div class="ach-name">正交大師 90°</div>
+          <div class="ach-desc">湊出內積 u·v = 0 的非零垂直向量</div>
+        </div>
+        <div class="ach-card" data-ach="zero_cancel">
+          <div class="ach-icon">🌀</div>
+          <div class="ach-name">完美抵銷</div>
+          <div class="ach-desc">用非零係數讓合成向量 w 歸零</div>
+        </div>
+        <div class="ach-card" data-ach="first_fish">
+          <div class="ach-icon">🐟</div>
+          <div class="ach-name">尋寶新手貓</div>
+          <div class="ach-desc">在闖關模式成功抓到第 1 條小魚乾</div>
+        </div>
+        <div class="ach-card" data-ach="streak_three">
+          <div class="ach-icon">🔥</div>
+          <div class="ach-name">線性代數神射手</div>
+          <div class="ach-desc">闖關模式達成 3 連勝</div>
+        </div>
+        <div class="ach-card" data-ach="note_keeper">
+          <div class="ach-icon">📓</div>
+          <div class="ach-name">記憶收藏家</div>
+          <div class="ach-desc">收藏一組向量配方至實驗筆記</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Experiment Log Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📓 魔法實驗紀錄本（點擊可一鍵還原配方）</div>
+        <div style="display:flex;gap:6px;">
+          <button class="preset-btn" id="btnClearLogs">🗑️ 清空紀錄</button>
+        </div>
+      </div>
+      <div class="log-list" id="logList"></div>
+    </div>
+  </section>
+
+  <!-- Spec & Vibe Coding Evolution Modal -->
+  <div class="modal-backdrop" id="specModal">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3>📖 專案規格書與 Vibe Coding 迭代歷程</h3>
+        <button class="preset-btn" id="btnCloseModal">✖ 關閉</button>
+      </div>
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:12px;">
+        本作品呼應課程第 5 週「AI 怎麼記得前面說過什麼」中的<b>線性代數核心（向量內積與線性組合）</b>，透過 AI 協作與三階段迭代完善而成：
+      </p>
+      <ul>
+        <li><b>v1.0 初版原型</b>：建立基礎 2D 座標平面與滑桿，繪製基底向量 u、v 與線性組合 w = c₁u + c₂v。</li>
+        <li><b>v2.0 視覺與互動升級</b>：改為馬卡龍可愛貓咪主題，新增<b>滑鼠直接拖曳畫布向量端點</b>、<b>平行四邊形法則虛線</b>、<b>內積投影與餘弦夾角扇形</b>，以及課堂範例快捷鍵。</li>
+        <li><b>v3.0 遊戲化與記憶系統完善</b>：新增「🐟 小貓尋寶闖關模式」（含克拉瑪公式聯立方程提示與防共線無解檢查）、Web Audio API 合成音效、日夜主題切換，以及 `localStorage` 自動保存成就與實驗紀錄。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" role="status" aria-live="polite">✨ 已儲存至實驗筆記！</div>
+
+  <script>
+    /**************************************************************
+     * 喵喵向量魔法屋 - 單一檔案互動邏輯 (Vanilla JS + Canvas + Web Audio)
+     **************************************************************/
+    const state = {
+      mode: 'sandbox', // 'sandbox' | 'dot' | 'game'
+      ux: 1, uy: 1,
+      vx: 2, vy: 1,
+      c1: 1, c2: 1,
+      soundOn: true,
+      theme: 'day',
+      dragging: null, // 'u' | 'v' | null
+      hoverTarget: null,
+      // Game Mode State
+      gameDifficulty: 'easy', // 'easy' (c1,c2 step 1, base fixed) | 'hard' (step 0.5)
+      targetX: 4,
+      targetY: 3,
+      ansC1: 2,
+      ansC2: 1,
+      score: 0,
+      streak: 0,
+      confettiParticles: [],
+      achievements: {
+        first_drag: false,
+        ortho_master: false,
+        zero_cancel: false,
+        first_fish: false,
+        streak_three: false,
+        note_keeper: false
+      },
+      logs: []
+    };
+
+    const STORAGE_KEY = 'meow_vector_magic_v3';
+
+    // DOM Elements
+    const canvas = document.getElementById('vectorCanvas');
+    const ctx = canvas.getContext('2d');
+    const cursorCoordBadge = document.getElementById('cursorCoordBadge');
+    const canvasModeTitle = document.getElementById('canvasModeTitle');
+    const legendExtra = document.getElementById('legendExtra');
+
+    const inputs = {
+      c1Range: document.getElementById('c1Range'),
+      c1Num: document.getElementById('c1Num'),
+      c2Range: document.getElementById('c2Range'),
+      c2Num: document.getElementById('c2Num'),
+      uxRange: document.getElementById('uxRange'),
+      uxNum: document.getElementById('uxNum'),
+      uyRange: document.getElementById('uyRange'),
+      uyNum: document.getElementById('uyNum'),
+      vxRange: document.getElementById('vxRange'),
+      vxNum: document.getElementById('vxNum'),
+      vyRange: document.getElementById('vyRange'),
+      vyNum: document.getElementById('vyNum')
+    };
+
+    // Web Audio Cute Sound Synthesizer (Zero external assets required)
+    let audioCtx = null;
+    function playTone(type = 'pop') {
+      if (!state.soundOn) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+
+        if (type === 'pop') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else if (type === 'win') {
+          const notes = [523.25, 659.25, 783.99, 1046.5];
+          notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.16, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.26);
+          });
+        } else if (type === 'miss') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.linearRampToValueAtTime(180, now + 0.18);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        }
+      } catch (e) {
+        // Ignore audio context restriction errors
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    // Load saved state from localStorage
+    function loadSavedData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.achievements) {
+            state.achievements = { ...state.achievements, ...parsed.achievements };
+          }
+          if (Array.isArray(parsed.logs) && parsed.logs.length > 0) {
+            state.logs = parsed.logs;
+          }
+          if (typeof parsed.score === 'number') state.score = parsed.score;
+          if (typeof parsed.streak === 'number') state.streak = parsed.streak;
+          if (parsed.theme === 'night') {
+            state.theme = 'night';
+            document.documentElement.setAttribute('data-theme', 'night');
+            document.getElementById('btnThemeToggle').textContent = '☀️ 草莓日間模式';
+          }
+        }
+      } catch (e) {
+        console.warn('localStorage load skipped', e);
+      }
+
+      if (state.logs.length === 0) {
+        state.logs = [
+          {
+            title: '📘 課堂線性組合範例',
+            ux: 1, uy: 1, vx: 2, vy: 1, c1: 1, c2: 1,
+            note: 'w = 1·(1,1) + 1·(2,1) = (3,2)'
+          },
+          {
+            title: '📐 垂直正交 90° 組合',
+            ux: 2, uy: 1, vx: -1, vy: 2, c1: 1, c2: 1,
+            note: 'u · v = 0，兩向量夾角剛好 90°'
+          }
+        ];
+      }
+      renderAchievements();
+      renderLogs();
+      updateGameScoreUI();
+    }
+
+    function saveData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          achievements: state.achievements,
+          logs: state.logs,
+          score: state.score,
+          streak: state.streak,
+          theme: state.theme
+        }));
+      } catch (e) {}
+    }
+
+    function unlockAchievement(key, label) {
+      if (!state.achievements[key]) {
+        state.achievements[key] = true;
+        saveData();
+        renderAchievements();
+        playTone('win');
+        showToast(`🏅 解鎖成就：【${label}】！`);
+      }
+    }
+
+    function renderAchievements() {
+      const cards = document.querySelectorAll('.ach-card');
+      let count = 0;
+      cards.forEach(card => {
+        const key = card.getAttribute('data-ach');
+        if (state.achievements[key]) {
+          card.classList.add('unlocked');
+          count++;
+        } else {
+          card.classList.remove('unlocked');
+        }
+      });
+      document.getElementById('achCountBadge').textContent = `已解鎖 ${count} / 6`;
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('logList');
+      container.innerHTML = '';
+      state.logs.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'log-item';
+        div.innerHTML = `
+          <div>
+            <strong>${item.title}</strong>
+            <div style="color:var(--text-muted);font-family:monospace;">${item.note}</div>
+          </div>
+          <button type="button" data-idx="${index}">套用配方</button>
+        `;
+        div.querySelector('button').addEventListener('click', () => {
+          applyVectorState(item.ux, item.uy, item.vx, item.vy, item.c1, item.c2);
+          playTone('pop');
+          showToast(`✨ 已套用「${item.title}」`);
+        });
+        container.appendChild(div);
+      });
+    }
+
+    // Coordinate Conversion Helpers
+    function getScale() {
+      // Coordinate range roughly -8 to +8 horizontally, -6 to +6 vertically
+      return canvas.width / 16;
+    }
+
+    function toScreen(x, y) {
+      const scale = getScale();
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      return {
+        px: cx + x * scale,
+        py: cy - y * scale
+      };
+    }
+
+    function toMath(px, py) {
+      const scale = getScale();
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      return {
+        x: (px - cx) / scale,
+        y: (cy - py) / scale
+      };
+    }
+
+    // Draw Cute Arrow on Canvas
+    function drawVectorArrow(x1, y1, x2, y2, color, label, dashed = false, lineWidth = 3.5) {
+      const p1 = toScreen(x1, y1);
+      const p2 = toScreen(x2, y2);
+      const dx = p2.px - p1.px;
+      const dy = p2.py - p1.py;
+      const len = Math.hypot(dx, dy);
+      if (len < 2) return;
+
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = 'round';
+      if (dashed) ctx.setLineDash([6, 6]);
+
+      ctx.beginPath();
+      ctx.moveTo(p1.px, p1.py);
+      ctx.lineTo(p2.px, p2.py);
+      ctx.stroke();
+
+      // Arrowhead
+      ctx.setLineDash([]);
+      const angle = Math.atan2(dy, dx);
+      const headLen = 13;
+      ctx.beginPath();
+      ctx.moveTo(p2.px, p2.py);
+      ctx.lineTo(p2.px - headLen * Math.cos(angle - Math.PI / 6), p2.py - headLen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(p2.px - headLen * Math.cos(angle + Math.PI / 6), p2.py - headLen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      // Label Pill
+      if (label) {
+        ctx.font = 'bold 13px "PingFang TC", "Noto Sans TC", sans-serif';
+        const textWidth = ctx.measureText(label).width;
+        const lx = p2.px + Math.cos(angle) * 14 - textWidth / 2;
+        const ly = p2.py + Math.sin(angle) * 14;
+        ctx.fillStyle = state.theme === 'night' ? 'rgba(31,27,44,0.88)' : 'rgba(255,255,255,0.9)';
+        ctx.beginPath();
+        ctx.roundRect(lx - 6, ly - 11, textWidth + 12, 22, 8);
+        ctx.fill();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.fillText(label, lx, ly + 4);
+      }
+      ctx.restore();
+    }
+
+    function drawDraggableHandle(x, y, color, isHovered) {
+      const p = toScreen(x, y);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(p.px, p.py, isHovered ? 9 : 6.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = color;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Main Canvas Render Loop
+    function renderCanvas() {
+      const width = canvas.width;
+      const height = canvas.height;
+      const scale = getScale();
+      const cx = width / 2;
+      const cy = height / 2;
+
+      const styles = getComputedStyle(document.documentElement);
+      const gridColor = styles.getPropertyValue('--grid-line').trim() || '#F3E5E8';
+      const axisColor = styles.getPropertyValue('--axis-line').trim() || '#C9B2B8';
+      const textMuted = styles.getPropertyValue('--text-muted').trim() || '#8C736E';
+
+      ctx.clearRect(0, 0, width, height);
+
+      // 1. Draw Grid Lines
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = gridColor;
+      for (let x = -8; x <= 8; x++) {
+        const px = cx + x * scale;
+        ctx.beginPath();
+        ctx.moveTo(px, 0);
+        ctx.lineTo(px, height);
+        ctx.stroke();
+      }
+      for (let y = -6; y <= 6; y++) {
+        const py = cy - y * scale;
+        ctx.beginPath();
+        ctx.moveTo(0, py);
+        ctx.lineTo(width, py);
+        ctx.stroke();
+      }
+
+      // 2. Draw X & Y Axes
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = axisColor;
+      ctx.beginPath();
+      ctx.moveTo(0, cy);
+      ctx.lineTo(width, cy);
+      ctx.moveTo(cx, 0);
+      ctx.lineTo(cx, height);
+      ctx.stroke();
+
+      // Axis Numbers
+      ctx.fillStyle = textMuted;
+      ctx.font = 'bold 11px monospace';
+      for (let x = -7; x <= 7; x++) {
+        if (x === 0) continue;
+        ctx.fillText(x, cx + x * scale - 4, cy + 15);
+      }
+      for (let y = -5; y <= 5; y++) {
+        if (y === 0) continue;
+        ctx.fillText(y, cx + 6, cy - y * scale + 4);
+      }
+      ctx.restore();
+
+      const { ux, uy, vx, vy, c1, c2 } = state;
+      const c1ux = c1 * ux;
+      const c1uy = c1 * uy;
+      const c2vx = c2 * vx;
+      const c2vy = c2 * vy;
+      const wx = c1ux + c2vx;
+      const wy = c1uy + c2vy;
+
+      if (state.mode === 'dot') {
+        // Draw Angle Arc between u and v
+        const lenU = Math.hypot(ux, uy);
+        const lenV = Math.hypot(vx, vy);
+        if (lenU > 0.01 && lenV > 0.01) {
+          const angU = Math.atan2(-uy, ux);
+          const angV = Math.atan2(-vy, vx);
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, 42, angU, angV, false);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+          ctx.fill();
+          ctx.strokeStyle = '#F59E0B';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.restore();
+
+          // Orthogonal Projection of u onto v
+          const dotUV = ux * vx + uy * vy;
+          const projScalar = dotUV / (lenV * lenV);
+          const projX = projScalar * vx;
+          const projY = projScalar * vy;
+
+          // Perpendicular drop line from u to proj_v(u)
+          drawVectorArrow(ux, uy, projX, projY, '#F59E0B', '', true, 2);
+          drawVectorArrow(0, 0, projX, projY, '#F59E0B', '投影 proj', false, 3);
+        }
+
+        // Draw u and v prominently
+        drawVectorArrow(0, 0, ux, uy, '#FF7597', `u(${ux}, ${uy})`, false, 4);
+        drawVectorArrow(0, 0, vx, vy, '#2EC4B6', `v(${vx}, ${vy})`, false, 4);
+        drawDraggableHandle(ux, uy, '#FF7597', state.hoverTarget === 'u');
+        drawDraggableHandle(vx, vy, '#2EC4B6', state.hoverTarget === 'v');
+
+      } else {
+        // Sandbox or Game Mode: Draw Parallelogram Law & Linear Combination
+        // Parallelogram dashed lines
+        drawVectorArrow(c1ux, c1uy, wx, wy, '#2EC4B6', '', true, 2);
+        drawVectorArrow(c2vx, c2vy, wx, wy, '#FF7597', '', true, 2);
+
+        // Scaled vectors c1*u and c2*v
+        drawVectorArrow(0, 0, c1ux, c1uy, 'rgba(255, 117, 151, 0.55)', `c₁u`, false, 2.5);
+        drawVectorArrow(0, 0, c2vx, c2vy, 'rgba(46, 196, 182, 0.55)', `c₂v`, false, 2.5);
+
+        // Base vectors u and v
+        drawVectorArrow(0, 0, ux, uy, '#FF7597', `u(${ux},${uy})`, false, 3.8);
+        drawVectorArrow(0, 0, vx, vy, '#2EC4B6', `v(${vx},${vy})`, false, 3.8);
+
+        // Resultant vector w = c1*u + c2*v
+        drawVectorArrow(0, 0, wx, wy, '#8B5CF6', `w(${Number(wx.toFixed(1))},${Number(wy.toFixed(1))})`, false, 4.5);
+
+        // Draw cute cat head at resultant vector tip w
+        const pw = toScreen(wx, wy);
+        ctx.save();
+        ctx.font = '22px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🐱', pw.px, pw.py - 18);
+        ctx.restore();
+
+        // In Game mode, draw target fish
+        if (state.mode === 'game') {
+          const pt = toScreen(state.targetX, state.targetY);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(pt.px, pt.py, 18, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#F59E0B';
+          ctx.stroke();
+          ctx.font = '24px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('🐟', pt.px, pt.py);
+          ctx.font = 'bold 12px monospace';
+          ctx.fillStyle = '#D97706';
+          ctx.fillText(`目標(${state.targetX}, ${state.targetY})`, pt.px, pt.py + 26);
+          ctx.restore();
+        } else {
+          // Draw draggable handles for u and v in sandbox mode
+          drawDraggableHandle(ux, uy, '#FF7597', state.hoverTarget === 'u');
+          drawDraggableHandle(vx, vy, '#2EC4B6', state.hoverTarget === 'v');
+        }
+      }
+
+      // Render Confetti if active
+      if (state.confettiParticles.length > 0) {
+        state.confettiParticles.forEach((p) => {
+          ctx.save();
+          ctx.fillStyle = p.color;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.angle);
+          ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r);
+          ctx.restore();
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.25;
+          p.angle += 0.1;
+        });
+        state.confettiParticles = state.confettiParticles.filter(p => p.y < height + 20);
+        if (state.confettiParticles.length > 0) {
+          requestAnimationFrame(renderCanvas);
+        }
+      }
+    }
+
+    function triggerConfetti() {
+      const colors = ['#FF7597', '#2EC4B6', '#8B5CF6', '#F59E0B', '#68D391'];
+      for (let i = 0; i < 55; i++) {
+        state.confettiParticles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 11,
+          vy: (Math.random() - 0.85) * 10,
+          r: 6 + Math.random() * 6,
+          color: colors[i % colors.length],
+          angle: Math.random() * Math.PI * 2
+        });
+      }
+      renderCanvas();
+    }
+
+    // Update UI Readouts & Check Math Conditions
+    function updateCalculations() {
+      const { ux, uy, vx, vy, c1, c2 } = state;
+      const wx = c1 * ux + c2 * vx;
+      const wy = c1 * uy + c2 * vy;
+
+      // Update Coordinate Pills
+      document.getElementById('uCoordPill').textContent = `u = (${ux.toFixed(1)}, ${uy.toFixed(1)})`;
+      document.getElementById('vCoordPill').textContent = `v = (${vx.toFixed(1)}, ${vy.toFixed(1)})`;
+      document.getElementById('wCoordPill').textContent = `w = (${wx.toFixed(1)}, ${wy.toFixed(1)})`;
+
+      // Linear Combination Formula
+      document.getElementById('linearCombFormula').textContent =
+        `w = ${c1.toFixed(1)}·(${ux.toFixed(1)}, ${uy.toFixed(1)}) + ${c2.toFixed(1)}·(${vx.toFixed(1)}, ${vy.toFixed(1)}) = (${wx.toFixed(1)}, ${wy.toFixed(1)})`;
+
+      // Dot Product & Angle
+      const dot = ux * vx + uy * vy;
+      const lenU = Math.hypot(ux, uy);
+      const lenV = Math.hypot(vx, vy);
+      let cosTheta = 0;
+      let angleDeg = 0;
+
+      if (lenU > 1e-5 && lenV > 1e-5) {
+        cosTheta = Math.max(-1, Math.min(1, dot / (lenU * lenV)));
+        angleDeg = (Math.acos(cosTheta) * 180) / Math.PI;
+      }
+
+      document.getElementById('angleBadge').textContent = `夾角 θ = ${angleDeg.toFixed(1)}°`;
+      document.getElementById('dotProductFormula').textContent =
+        `u · v = (${ux.toFixed(1)}×${vx.toFixed(1)}) + (${uy.toFixed(1)}×${vy.toFixed(1)}) = ${dot.toFixed(2)} ｜ cos θ = ${cosTheta.toFixed(3)}`;
+
+      // Harmony Meter Interpretation
+      const faceEl = document.getElementById('harmonyFace');
+      const titleEl = document.getElementById('harmonyTitle');
+      const descEl = document.getElementById('harmonyDesc');
+
+      if (lenU < 1e-5 || lenV < 1e-5) {
+        faceEl.textContent = '😴';
+        titleEl.textContent = '零向量休息中：長度為 0';
+        descEl.textContent = '當其中一個向量為 (0, 0) 時，內積必為 0，且沒有固定方向喔！';
+      } else if (Math.abs(dot) < 1e-4) {
+        faceEl.textContent = '😺';
+        titleEl.textContent = '內積 = 0：垂直正交 90°・互不干擾！';
+        descEl.textContent = '兩向量互相垂直（Orthogonal），在彼此方向上的投影量為 0，線性獨立性最佳！';
+        unlockAchievement('ortho_master', '正交大師 90°');
+      } else if (dot > 0) {
+        faceEl.textContent = '😻';
+        titleEl.textContent = `內積 > 0（+${dot.toFixed(1)}）：方向相近・喵喵默契超高！`;
+        descEl.textContent = '夾角小於 90°，就像 Transformer 注意力機制（Attention）中語意高度相關的兩個詞向量！';
+      } else {
+        faceEl.textContent = '🙀';
+        titleEl.textContent = `內積 < 0（${dot.toFixed(1)}）：方向相反・背道而馳！`;
+        descEl.textContent = '夾角大於 90°，兩向量朝反方向拉扯，投影落在反向延長線上。';
+      }
+
+      // Check zero cancellation achievement
+      if (Math.hypot(wx, wy) < 1e-4 && (Math.abs(c1) > 0.1 || Math.abs(c2) > 0.1) && lenU > 0.1 && lenV > 0.1) {
+        unlockAchievement('zero_cancel', '完美抵銷');
+      }
+
+      // Game Mode Distance Update
+      if (state.mode === 'game') {
+        const dist = Math.hypot(wx - state.targetX, wy - state.targetY);
+        const distEl = document.getElementById('distanceErrorText');
+        distEl.textContent = dist.toFixed(2);
+        distEl.style.color = dist < 0.05 ? '#2EC4B6' : 'var(--accent-pink-dark)';
+      }
+
+      renderCanvas();
+    }
+
+    function syncInputsFromState() {
+      inputs.c1Range.value = state.c1;
+      inputs.c1Num.value = state.c1;
+      inputs.c2Range.value = state.c2;
+      inputs.c2Num.value = state.c2;
+      inputs.uxRange.value = state.ux;
+      inputs.uxNum.value = state.ux;
+      inputs.uyRange.value = state.uy;
+      inputs.uyNum.value = state.uy;
+      inputs.vxRange.value = state.vx;
+      inputs.vxNum.value = state.vx;
+      inputs.vyRange.value = state.vy;
+      inputs.vyNum.value = state.vy;
+    }
+
+    function applyVectorState(ux, uy, vx, vy, c1, c2) {
+      state.ux = ux;
+      state.uy = uy;
+      state.vx = vx;
+      state.vy = vy;
+      state.c1 = c1;
+      state.c2 = c2;
+      syncInputsFromState();
+      updateCalculations();
+    }
+
+    // Bind Sliders & Number Inputs
+    [
+      ['c1', 'c1Range', 'c1Num'],
+      ['c2', 'c2Range', 'c2Num'],
+      ['ux', 'uxRange', 'uxNum'],
+      ['uy', 'uyRange', 'uyNum'],
+      ['vx', 'vxRange', 'vxNum'],
+      ['vy', 'vyRange', 'vyNum']
+    ].forEach(([key, rangeId, numId]) => {
+      const rEl = inputs[rangeId];
+      const nEl = inputs[numId];
+      rEl.addEventListener('input', () => {
+        state[key] = parseFloat(rEl.value) || 0;
+        nEl.value = state[key];
+        unlockAchievement('first_drag', '肉球初體驗');
+        updateCalculations();
+      });
+      nEl.addEventListener('input', () => {
+        let val = parseFloat(nEl.value);
+        if (isNaN(val)) val = 0;
+        val = Math.max(-8, Math.min(8, val));
+        state[key] = val;
+        rEl.value = val;
+        unlockAchievement('first_drag', '肉球初體驗');
+        updateCalculations();
+      });
+    });
+
+    // Canvas Mouse & Touch Dragging for Vector Endpoints u and v
+    function getPointerMathCoords(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+      const px = (clientX - rect.left) * (canvas.width / rect.width);
+      const py = (clientY - rect.top) * (canvas.height / rect.height);
+      return { px, py, ...toMath(px, py) };
+    }
+
+    canvas.addEventListener('mousedown', (evt) => {
+      if (state.mode === 'game') return; // Lock base vectors during puzzle
+      const { px, py } = getPointerMathCoords(evt);
+      const pu = toScreen(state.ux, state.uy);
+      const pv = toScreen(state.vx, state.vy);
+      if (Math.hypot(px - pu.px, py - pu.py) < 22) {
+        state.dragging = 'u';
+      } else if (Math.hypot(px - pv.px, py - pv.py) < 22) {
+        state.dragging = 'v';
+      }
+    });
+
+    window.addEventListener('mousemove', (evt) => {
+      const rect = canvas.getBoundingClientRect();
+      if (evt.clientX >= rect.left && evt.clientX <= rect.right &&
+          evt.clientY >= rect.top && evt.clientY <= rect.bottom) {
+        const { px, py, x, y } = getPointerMathCoords(evt);
+        cursorCoordBadge.textContent = `游標：(${x.toFixed(1)}, ${y.toFixed(1)})`;
+
+        if (!state.dragging && state.mode !== 'game') {
+          const pu = toScreen(state.ux, state.uy);
+          const pv = toScreen(state.vx, state.vy);
+          let nextHover = null;
+          if (Math.hypot(px - pu.px, py - pu.py) < 22) nextHover = 'u';
+          else if (Math.hypot(px - pv.px, py - pv.py) < 22) nextHover = 'v';
+          if (nextHover !== state.hoverTarget) {
+            state.hoverTarget = nextHover;
+            renderCanvas();
+          }
+        }
+      }
+
+      if (state.dragging) {
+        const { x, y } = getPointerMathCoords(evt);
+        // Snap to 0.5 grid steps for clean math numbers
+        const snappedX = Math.max(-7, Math.min(7, Math.round(x * 2) / 2));
+        const snappedY = Math.max(-5, Math.min(5, Math.round(y * 2) / 2));
+        if (state.dragging === 'u') {
+          state.ux = snappedX;
+          state.uy = snappedY;
+        } else if (state.dragging === 'v') {
+          state.vx = snappedX;
+          state.vy = snappedY;
+        }
+        unlockAchievement('first_drag', '肉球初體驗');
+        syncInputsFromState();
+        updateCalculations();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (state.dragging) {
+        playTone('pop');
+        state.dragging = null;
+      }
+    });
+
+    // Mode Switching Tabs
+    document.querySelectorAll('.mode-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.mode = btn.getAttribute('data-mode');
+        playTone('pop');
+
+        const gamePanel = document.getElementById('gamePanel');
+        const uInputs = [inputs.uxRange, inputs.uxNum, inputs.uyRange, inputs.uyNum, inputs.vxRange, inputs.vxNum, inputs.vyRange, inputs.vyNum];
+
+        if (state.mode === 'game') {
+          gamePanel.classList.add('active');
+          canvasModeTitle.textContent = '🐟 尋寶闖關模式（調整倍數 c₁ 與 c₂ 抵達小魚乾座標！）';
+          legendExtra.innerHTML = '<i class="legend-dot" style="background:#F59E0B;"></i>目標小魚乾座標 T';
+          uInputs.forEach(el => el.disabled = true);
+          generateNewPuzzle();
+        } else {
+          gamePanel.classList.remove('active');
+          uInputs.forEach(el => el.disabled = false);
+          if (state.mode === 'dot') {
+            canvasModeTitle.textContent = '🔍 內積與夾角雷達（觀察投影向量 proj 與夾角 θ 變化）';
+            legendExtra.innerHTML = '<i class="legend-dot" style="background:#F59E0B;"></i>正交投影向量 proj_v(u)';
+          } else {
+            canvasModeTitle.textContent = '✨ 2D 魔法座標平面（可直接用滑鼠拖曳向量箭頭端點！）';
+            legendExtra.innerHTML = '<i class="legend-dot" style="background:#F59E0B;"></i>平行四邊形法則輔助線';
+          }
+          updateCalculations();
+        }
+      });
+    });
+
+    // Presets
+    document.querySelectorAll('[data-preset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (state.mode === 'game') {
+          showToast('🐟 闖關模式中基底向量已鎖定，請切換至沙盒模式體驗範例！');
+          return;
+        }
+        const p = btn.getAttribute('data-preset');
+        playTone('pop');
+        if (p === 'lecture') {
+          applyVectorState(1, 1, 2, 1, 1, 1);
+          showToast('📘 已載入課堂範例：1·(1,1) + 1·(2,1) = (3,2)');
+        } else if (p === 'orthogonal') {
+          applyVectorState(2, 1, -1, 2, 1, 1);
+          showToast('📐 已載入垂直正交範例：u·v = 2×(-1) + 1×2 = 0');
+        } else if (p === 'collinear') {
+          applyVectorState(2, 1, 4, 2, 1, 0.5);
+          showToast('🚀 已載入同向共線向量：夾角 0°');
+        } else if (p === 'opposite') {
+          applyVectorState(2, 1, 2, 1, 1.5, -1.5);
+          showToast('⚡ 已載入反向抵銷範例：1.5u - 1.5v = (0,0)');
+        }
+      });
+    });
+
+    document.getElementById('btnResetView').addEventListener('click', () => {
+      playTone('pop');
+      if (state.mode === 'game') {
+        state.c1 = 0;
+        state.c2 = 0;
+        syncInputsFromState();
+        updateCalculations();
+      } else {
+        applyVectorState(1, 1, 2, 1, 1, 1);
+      }
+    });
+
+    // Game Mode Puzzle Generator (Guaranteed linearly independent basis u, v)
+    function generateNewPuzzle() {
+      document.getElementById('gameHintBox').style.display = 'none';
+      if (state.gameDifficulty === 'easy') {
+        const bases = [
+          { ux: 1, uy: 1, vx: 2, vy: -1 },
+          { ux: 2, uy: 1, vx: -1, vy: 2 },
+          { ux: 1, uy: 2, vx: 2, vy: 1 },
+          { ux: 2, uy: 0, vx: 1, vy: 2 }
+        ];
+        const b = bases[Math.floor(Math.random() * bases.length)];
+        const choices = [-2, -1, 1, 2];
+        state.ansC1 = choices[Math.floor(Math.random() * choices.length)];
+        state.ansC2 = choices[Math.floor(Math.random() * choices.length)];
+        state.ux = b.ux;
+        state.uy = b.uy;
+        state.vx = b.vx;
+        state.vy = b.vy;
+      } else {
+        const bases = [
+          { ux: 2, uy: 1, vx: -1, vy: 1.5 },
+          { ux: 1.5, uy: 2, vx: 2, vy: -1 },
+          { ux: 2, uy: -1, vx: 1, vy: 2 }
+        ];
+        const b = bases[Math.floor(Math.random() * bases.length)];
+        const choices = [-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2];
+        state.ansC1 = choices[Math.floor(Math.random() * choices.length)];
+        state.ansC2 = choices[Math.floor(Math.random() * choices.length)];
+        state.ux = b.ux;
+        state.uy = b.uy;
+        state.vx = b.vx;
+        state.vy = b.vy;
+      }
+
+      state.targetX = Number((state.ansC1 * state.ux + state.ansC2 * state.vx).toFixed(2));
+      state.targetY = Number((state.ansC1 * state.uy + state.ansC2 * state.vy).toFixed(2));
+      state.c1 = 0;
+      state.c2 = 0;
+
+      document.getElementById('targetCoordText').textContent = `(${state.targetX}, ${state.targetY})`;
+      syncInputsFromState();
+      updateCalculations();
+    }
+
+    function updateGameScoreUI() {
+      document.getElementById('scoreStreakText').textContent = `${state.score} 隻 / 🔥${state.streak}`;
+    }
+
+    document.getElementById('btnCheckAnswer').addEventListener('click', () => {
+      const wx = state.c1 * state.ux + state.c2 * state.vx;
+      const wy = state.c1 * state.uy + state.c2 * state.vy;
+      const dist = Math.hypot(wx - state.targetX, wy - state.targetY);
+
+      if (dist < 0.08) {
+        state.score += 1;
+        state.streak += 1;
+        saveData();
+        updateGameScoreUI();
+        playTone('win');
+        triggerConfetti();
+        showToast(`🎉 太神啦！成功合成 (${state.targetX}, ${state.targetY}) 抓到小魚乾！`);
+        unlockAchievement('first_fish', '尋寶新手貓');
+        if (state.streak >= 3) {
+          unlockAchievement('streak_three', '線性代數神射手');
+        }
+        setTimeout(() => generateNewPuzzle(), 1500);
+      } else {
+        state.streak = 0;
+        saveData();
+        updateGameScoreUI();
+        playTone('miss');
+        showToast(`😿 還差一點點（距離誤差 ${dist.toFixed(2)}），可點「喵喵數學提示」喔！`);
+      }
+    });
+
+    document.getElementById('btnGameHint').addEventListener('click', () => {
+      const hintBox = document.getElementById('gameHintBox');
+      const det = state.ux * state.vy - state.uy * state.vx;
+      hintBox.style.display = 'block';
+      hintBox.innerHTML = `
+        <b>💡 喵喵聯立方程式解析：</b><br/>
+        我們要找 <code>c₁·(${state.ux}, ${state.uy}) + c₂·(${state.vx}, ${state.vy}) = (${state.targetX}, ${state.targetY})</code><br/>
+        • X 軸方程式：<code>${state.ux}c₁ + ${state.vx}c₂ = ${state.targetX}</code><br/>
+        • Y 軸方程式：<code>${state.uy}c₁ + ${state.vy}c₂ = ${state.targetY}</code><br/>
+        • 行列式 Δ = ${det.toFixed(2)}，解出秘密配方：<b>c₁ = ${state.ansC1}</b>，<b>c₂ = ${state.ansC2}</b>！
+      `;
+      playTone('pop');
+    });
+
+    document.getElementById('btnNextPuzzle').addEventListener('click', () => {
+      playTone('pop');
+      generateNewPuzzle();
+    });
+
+    document.getElementById('btnToggleDifficulty').addEventListener('click', () => {
+      state.gameDifficulty = state.gameDifficulty === 'easy' ? 'hard' : 'easy';
+      document.getElementById('gameLevelBadge').textContent =
+        state.gameDifficulty === 'easy' ? '難度：暖身整數關' : '難度：進階 0.5 倍數關';
+      playTone('pop');
+      generateNewPuzzle();
+    });
+
+    // Save Snapshot to Experiment Notebook
+    document.getElementById('btnSaveSnap').addEventListener('click', () => {
+      const wx = state.c1 * state.ux + state.c2 * state.vx;
+      const wy = state.c1 * state.uy + state.c2 * state.vy;
+      const dot = state.ux * state.vx + state.uy * state.vy;
+      const newEntry = {
+        title: `🐾 魔法配方 #${state.logs.length + 1}`,
+        ux: state.ux, uy: state.uy,
+        vx: state.vx, vy: state.vy,
+        c1: state.c1, c2: state.c2,
+        note: `w=${state.c1}·(${state.ux},${state.uy})+${state.c2}·(${state.vx},${state.vy})=(${wx.toFixed(1)},${wy.toFixed(1)}) | u·v=${dot.toFixed(1)}`
+      };
+      state.logs.unshift(newEntry);
+      if (state.logs.length > 12) state.logs.pop();
+      saveData();
+      renderLogs();
+      unlockAchievement('note_keeper', '記憶收藏家');
+      playTone('pop');
+      showToast('📌 已將目前向量組合收藏至下方實驗紀錄本！');
+    });
+
+    document.getElementById('btnClearLogs').addEventListener('click', () => {
+      state.logs = [];
+      saveData();
+      renderLogs();
+      playTone('pop');
+      showToast('🗑️ 已清空實驗紀錄本');
+    });
+
+    // Theme & Sound & Spec Modal Toggles
+    document.getElementById('btnThemeToggle').addEventListener('click', (e) => {
+      if (state.theme === 'day') {
+        state.theme = 'night';
+        document.documentElement.setAttribute('data-theme', 'night');
+        e.currentTarget.textContent = '☀️ 草莓日間模式';
+      } else {
+        state.theme = 'day';
+        document.documentElement.removeAttribute('data-theme');
+        e.currentTarget.textContent = '🌙 星空夜間模式';
+      }
+      saveData();
+      playTone('pop');
+      renderCanvas();
+    });
+
+    document.getElementById('btnSoundToggle').addEventListener('click', (e) => {
+      state.soundOn = !state.soundOn;
+      e.currentTarget.textContent = state.soundOn ? '🔊 音效：開' : '🔇 音效：關';
+      if (state.soundOn) playTone('pop');
+    });
+
+    const specModal = document.getElementById('specModal');
+    document.getElementById('btnSpecModal').addEventListener('click', () => {
+      specModal.classList.add('open');
+      playTone('pop');
+    });
+    document.getElementById('btnCloseModal').addEventListener('click', () => {
+      specModal.classList.remove('open');
+    });
+    specModal.addEventListener('click', (e) => {
+      if (e.target === specModal) specModal.classList.remove('open');
+    });
+
+    // Initialize Application
+    loadSavedData();
+    syncInputsFromState();
+    updateCalculations();
+  </script>
+</body>
+</html>
